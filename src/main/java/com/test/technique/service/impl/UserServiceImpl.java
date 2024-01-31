@@ -2,6 +2,7 @@ package com.test.technique.service.impl;
 import com.test.technique.dto.UserDTO;
 import com.test.technique.dto.UserResponseDTO;
 import com.test.technique.entity.User;
+import com.test.technique.exception.DuplicateEmailException;
 import com.test.technique.exception.InvalidInputException;
 import com.test.technique.exception.UserNotFoundException;
 import com.test.technique.mapper.UserMapper;
@@ -39,6 +40,11 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO createUser(@Valid UserDTO userDTO) {
         if (userDTO == null) {
             throw new InvalidInputException("Invalid input: UserDTO is null");
+        }
+
+        // Verificar si el correo ya está en uso
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new DuplicateEmailException("Email is already in use");
         }
 
         User user = UserMapper.INSTANCE.dtoToEntity(userDTO);
