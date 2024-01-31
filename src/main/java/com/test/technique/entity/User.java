@@ -78,6 +78,10 @@ public class User {
     private Date updatedAt;
 
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    private Address address;
+
     /**
      * Sets the creation timestamp before persisting the user.
      */
