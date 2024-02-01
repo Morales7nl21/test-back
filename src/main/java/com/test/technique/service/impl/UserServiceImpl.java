@@ -1,11 +1,15 @@
 package com.test.technique.service.impl;
+import com.test.technique.dto.AddressDTO;
 import com.test.technique.dto.UserDTO;
 import com.test.technique.dto.UserResponseDTO;
+import com.test.technique.entity.Address;
 import com.test.technique.entity.User;
-import com.test.technique.exception.DuplicateEmailException;
-import com.test.technique.exception.InvalidInputException;
-import com.test.technique.exception.UserNotFoundException;
-import com.test.technique.mapper.UserMapper;
+import com.test.technique.library.exception.DuplicateEmailException;
+import com.test.technique.library.exception.InvalidInputException;
+import com.test.technique.library.exception.UserNotFoundException;
+import com.test.technique.library.mapper.AddressMapper;
+import com.test.technique.library.mapper.UserMapper;
+import com.test.technique.repository.AddressRepository;
 import com.test.technique.repository.UserRepository;
 
 import com.test.technique.service.UserService;
@@ -23,10 +27,12 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, AddressRepository addressRepository) {
         this.userRepository = userRepository;
+        this.addressRepository = addressRepository;
     }
 
     /**
@@ -104,6 +110,17 @@ public class UserServiceImpl implements UserService {
         return UserMapper.INSTANCE.entityToResponseDTO(savedUser);
     }
 
+
+    @Override
+    @Transactional
+    public UserResponseDTO addAddressToUser(Long userId, @Valid AddressDTO addressDTO) {
+        User user = userRepository.findById(userId)
+        .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
+        Address address = AddressMapper.INSTANCE.dtoToEntity(addressDTO);
+        user.setAddress(addressRepository.save(address));
+        user = userRepository.save(user);
+        return UserMapper.INSTANCE.entityToResponseDTO(user);
+    }
 
     /**
      * Deletes a user by ID.

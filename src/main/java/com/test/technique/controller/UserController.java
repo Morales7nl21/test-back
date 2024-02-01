@@ -1,8 +1,10 @@
 package com.test.technique.controller;
 
 
+import com.test.technique.dto.AddressDTO;
 import com.test.technique.dto.UserDTO;
 import com.test.technique.dto.UserResponseDTO;
+import com.test.technique.library.util.Constants;
 import com.test.technique.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,8 +20,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller class for managing user-related operations.
+ */
 @RestController
-@RequestMapping("/users")
+@RequestMapping(Constants.API_BASE_URL + "users")
 @Validated
 public class UserController {
     private final UserService userService;
@@ -34,6 +39,8 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+
+    
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(
             @Parameter(description = "User information", required = true)
@@ -88,6 +95,14 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+
+    @PostMapping("/{userId}/add-address")
+    public ResponseEntity<UserResponseDTO> addAddressToUser(
+            @PathVariable Long userId,
+            @RequestBody @Valid AddressDTO addressDTO) {
+        UserResponseDTO updatedUser = userService.addAddressToUser(userId, addressDTO);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> deleteUser(
             @Parameter(description = "User ID", required = true) @PathVariable Long userId) {

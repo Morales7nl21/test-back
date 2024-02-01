@@ -25,6 +25,7 @@ public class UserResponseDTO {
     private Date birthdate;
     private Date createdAt;
     private Date updatedAt;
+    private AddressDTO address;
     /**
      * Converte la fecha a una cadena en formato ISO 8601.
      *

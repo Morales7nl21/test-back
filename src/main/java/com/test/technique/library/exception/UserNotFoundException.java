@@ -1,4 +1,4 @@
-package com.test.technique.exception;
+package com.test.technique.library.exception;
 
 
 public class UserNotFoundException extends RuntimeException {
